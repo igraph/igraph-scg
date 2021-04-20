@@ -30,7 +30,8 @@ a system-wide location, you can configure and build this project like this:
 ```sh
 mkdir build && cd build
 cmake ..
-make
+cmake --build .
+cmake --install .
 ```
 
 If you have installed igraph in a non-standard location, you need to tell CMake
@@ -39,7 +40,8 @@ where to look for it:
 ```sh
 mkdir build && cd build
 cmake -DCMAKE_PREFIX_PATH=/path/where/igraph/is/installed ..
-make
+cmake --build .
+cmake --install .
 ```
 
 CMake builds a static library by default; if you need a shared library,
