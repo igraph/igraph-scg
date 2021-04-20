@@ -1,0 +1,45 @@
+include(PadString)
+
+function(print_bool HEADING VAR)
+  if(${VAR})
+    set(LABEL "yes")
+  else()
+    set(LABEL "no")
+  endif()
+  print_str(${HEADING} ${LABEL})
+endfunction()
+
+function(print_str HEADING LABEL)
+  string(LENGTH "${HEADING}" HEADING_LENGTH)
+  math(EXPR REMAINING_WIDTH "30 - ${HEADING_LENGTH}")
+
+  if("${LABEL}" STREQUAL "")
+    pad_string(PADDED ${REMAINING_WIDTH} " " "${ARGN}")
+  else()
+    pad_string(PADDED ${REMAINING_WIDTH} " " "${LABEL}")
+  endif()
+
+  message(STATUS "${HEADING}: ${PADDED}")
+endfunction()
+
+#############################################################################
+
+message(STATUS " ")
+message(STATUS "-----[ Build configuration ]----")
+print_str("Version" "${PACKAGE_VERSION}")
+print_str("CMake build type" "${CMAKE_BUILD_TYPE}" "default")
+if(BUILD_SHARED_LIBS)
+  message(STATUS "Library type:             shared")
+else()
+  message(STATUS "Library type:             static")
+endif()
+if(USE_CCACHE)
+  if(CCACHE_PROGRAM)
+    message(STATUS "Compiler cache:           ccache")
+  endif()
+else()
+  message(STATUS "Compiler cache:         disabled")
+endif()
+message(STATUS "--------------------------------")
+message(STATUS " ")
+

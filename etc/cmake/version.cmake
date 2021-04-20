@@ -1,0 +1,15 @@
+set(PACKAGE_VERSION 0.1.0)
+
+#
+# Do not change anything below this line unless you know what you are doing
+#
+
+string(REGEX MATCH "^[^-]+" PACKAGE_VERSION_BASE "${PACKAGE_VERSION}")
+string(
+  REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9+])" "\\1;\\2;\\3"
+  PACKAGE_VERSION_PARTS "${PACKAGE_VERSION_BASE}"
+)
+list(GET PACKAGE_VERSION_PARTS 0 PACKAGE_VERSION_MAJOR)
+list(GET PACKAGE_VERSION_PARTS 1 PACKAGE_VERSION_MINOR)
+list(GET PACKAGE_VERSION_PARTS 2 PACKAGE_VERSION_PATCH)
+
