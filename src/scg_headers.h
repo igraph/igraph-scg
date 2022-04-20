@@ -77,9 +77,11 @@ typedef struct groups {
 igraph_error_t igraph_i_breaks_computation(const igraph_vector_t *v,
                                            igraph_vector_t *breaks, igraph_integer_t nb,
                                            igraph_integer_t method);
+
 igraph_error_t igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, igraph_integer_t *gr,
                                               igraph_integer_t n, igraph_integer_t n_interv,
                                               igraph_integer_t maxiter);
+
 igraph_error_t igraph_i_intervals_method(const igraph_vector_t *v, igraph_integer_t *gr,
                                          igraph_integer_t n, igraph_integer_t n_interv);
 
@@ -89,7 +91,9 @@ igraph_error_t igraph_i_intervals_method(const igraph_vector_t *v, igraph_intege
 
 igraph_error_t igraph_i_cost_matrix(igraph_real_t *Cv, const igraph_i_scg_indval_t *vs,
                                     igraph_integer_t n, igraph_integer_t matrix, const igraph_vector_t *ps);
-igraph_error_t igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr, igraph_integer_t n, igraph_integer_t nt,
+
+igraph_error_t igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr,
+                                          igraph_integer_t n, igraph_integer_t nt,
                                           igraph_integer_t matrix, const igraph_real_t *p,
                                           igraph_real_t *value);
 
@@ -113,12 +117,11 @@ igraph_error_t igraph_i_exact_coarse_graining(const igraph_real_t *v, igraph_int
 ---------------------------------------------------*/
 
 int igraph_i_compare_groups(const void *a, const void *b);
-int igraph_i_compare_real(const void *a, const void *b);
-int igraph_i_compare_int(const void *a, const void *b);
 
 igraph_real_t *igraph_i_real_sym_matrix(igraph_integer_t size);
-#define igraph_i_real_sym_mat_get(S,i,j) S[(i)+(j)*((j)+1)/2]
-#define igraph_i_real_sym_mat_set(S,i,j,val) S[(i)+(j)*((j)+1)/2] = val
+
+#define igraph_i_real_sym_mat_get(S, i, j) S[(i)+(j)*((j)+1)/2]
+#define igraph_i_real_sym_mat_set(S, i, j, val) S[(i)+(j)*((j)+1)/2] = val
 #define igraph_i_free_real_sym_matrix(S) IGRAPH_FREE(S)
 
 #endif

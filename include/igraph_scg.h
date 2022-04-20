@@ -28,22 +28,27 @@
 
 __BEGIN_DECLS
 
-typedef enum { IGRAPH_SCG_SYMMETRIC = 1, IGRAPH_SCG_LAPLACIAN = 2,
-               IGRAPH_SCG_STOCHASTIC = 3
-             } igraph_scg_matrix_t;
+typedef enum {
+    IGRAPH_SCG_SYMMETRIC = 1, IGRAPH_SCG_LAPLACIAN = 2,
+    IGRAPH_SCG_STOCHASTIC = 3
+} igraph_scg_matrix_t;
 
-typedef enum { IGRAPH_SCG_OPTIMUM = 1, IGRAPH_SCG_INTERV_KM = 2,
-               IGRAPH_SCG_INTERV = 3, IGRAPH_SCG_EXACT = 4
-             }
-igraph_scg_algorithm_t;
+typedef enum {
+    IGRAPH_SCG_OPTIMUM = 1, IGRAPH_SCG_INTERV_KM = 2,
+    IGRAPH_SCG_INTERV = 3, IGRAPH_SCG_EXACT = 4
+}
+        igraph_scg_algorithm_t;
 
-typedef enum { IGRAPH_SCG_NORM_ROW = 1, IGRAPH_SCG_NORM_COL = 2 }
-igraph_scg_norm_t;
+typedef enum {
+    IGRAPH_SCG_NORM_ROW = 1, IGRAPH_SCG_NORM_COL = 2
+}
+        igraph_scg_norm_t;
 
-typedef enum { IGRAPH_SCG_DIRECTION_DEFAULT = 1,
-               IGRAPH_SCG_DIRECTION_LEFT = 2,
-               IGRAPH_SCG_DIRECTION_RIGHT = 3
-             } igraph_scg_direction_t;
+typedef enum {
+    IGRAPH_SCG_DIRECTION_DEFAULT = 1,
+    IGRAPH_SCG_DIRECTION_LEFT = 2,
+    IGRAPH_SCG_DIRECTION_RIGHT = 3
+} igraph_scg_direction_t;
 
 IGRAPH_EXPORT igraph_error_t igraph_scg_grouping(const igraph_matrix_t *V,
                                                  igraph_vector_int_t *groups,
