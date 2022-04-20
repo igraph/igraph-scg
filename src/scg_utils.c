@@ -29,9 +29,6 @@
 
 #include "scg_headers.h"
 
-#include <igraph/igraph_error.h>
-#include <igraph/igraph_memory.h>
-
 /*to be used with qsort and struct ind_val arrays */
 int igraph_i_compare_ind_val(const void *a, const void *b) {
     igraph_i_scg_indval_t *arg1 = (igraph_i_scg_indval_t *) a;

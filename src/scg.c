@@ -77,15 +77,6 @@
 
 #include "igraph_scg.h"
 
-#include <igraph/igraph_eigen.h>
-#include <igraph/igraph_interface.h>
-#include <igraph/igraph_structural.h>
-#include <igraph/igraph_community.h>
-#include <igraph/igraph_constructors.h>
-#include <igraph/igraph_conversion.h>
-#include <igraph/igraph_memory.h>
-#include <igraph/igraph_qsort.h>
-
 #include "scg_headers.h"
 
 /**

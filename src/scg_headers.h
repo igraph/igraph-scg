@@ -55,8 +55,7 @@
 #ifndef SCG_HEADERS_H
 #define SCG_HEADERS_H
 
-#include <igraph/igraph_types.h>
-#include <igraph/igraph_vector.h>
+#include <igraph/igraph.h>
 
 typedef struct ind_val {
     igraph_integer_t ind;

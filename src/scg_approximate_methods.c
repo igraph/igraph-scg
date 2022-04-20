@@ -66,10 +66,6 @@
 
 #include "scg_headers.h"
 
-#include <igraph/igraph_error.h>
-#include <igraph/igraph_types.h>
-#include <igraph/igraph_vector.h>
-
 igraph_error_t igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, igraph_integer_t *gr,
                                               igraph_integer_t n, igraph_integer_t n_interv,
                                               igraph_integer_t maxiter) {

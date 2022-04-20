@@ -31,9 +31,6 @@
 
 #include "scg_headers.h"
 
-#include <igraph/igraph_memory.h>
-#include <igraph/igraph_qsort.h>
-
 #include <math.h>
 
 igraph_error_t igraph_i_exact_coarse_graining(const igraph_real_t *v,

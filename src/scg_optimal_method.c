@@ -37,12 +37,6 @@
 
 #include "scg_headers.h"
 
-#include <igraph/igraph_error.h>
-#include <igraph/igraph_memory.h>
-#include <igraph/igraph_matrix.h>
-#include <igraph/igraph_vector.h>
-#include <igraph/igraph_qsort.h>
-
 igraph_error_t igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr, igraph_integer_t n,
                                           igraph_integer_t nt, igraph_integer_t matrix, const igraph_real_t *p,
                                           igraph_real_t *value) {
