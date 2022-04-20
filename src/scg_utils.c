@@ -58,27 +58,6 @@ int igraph_i_compare_groups(const void *a, const void *b) {
     return 0;
 }
 
-/*to be used with qsort and real_vectors */
-int igraph_i_compare_real(const void *a, const void *b) {
-    igraph_real_t arg1 = * (igraph_real_t *) a;
-    igraph_real_t arg2 = * (igraph_real_t *) b;
-
-    if (arg1 < arg2) {
-        return -1;
-    } else if (arg1 == arg2) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
-
-/*to be used with qsort and integer vectors */
-int igraph_i_compare_int(const void *a, const void *b) {
-    int arg1 = * (int *) a;
-    int arg2 = * (int *) b;
-    return (arg1 - arg2);
-}
-
 /* allocate a igraph_real_t symmetrix matrix with dimension size x size
    in vector format*/
 igraph_real_t *igraph_i_real_sym_matrix(igraph_integer_t size)  {
