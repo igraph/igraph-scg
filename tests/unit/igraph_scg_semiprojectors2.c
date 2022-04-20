@@ -21,7 +21,7 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 int main() {
 
@@ -31,16 +31,17 @@ int main() {
     igraph_matrix_t V, V3;
     igraph_matrix_complex_t V2;
     igraph_sparsemat_t stochastic;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_eigen_which_t which;
-    igraph_vector_t p, selcol;
+    igraph_vector_t p;
+    igraph_vector_int_t selcol;
 
     igraph_matrix_init(&L, 0, 0);
     igraph_matrix_init(&R, 0, 0);
     igraph_matrix_init(&V, 0, 0);
     igraph_matrix_init(&V3, 0, 0);
-    igraph_vector_init(&groups, 0);
-    igraph_vector_init(&selcol, 1);
+    igraph_vector_int_init(&groups, 0);
+    igraph_vector_int_init(&selcol, 1);
 
     /* This is a 10-node tree with no non-trivial automorphisms. */
     igraph_small(&g, 10, IGRAPH_UNDIRECTED,
@@ -50,11 +51,12 @@ int main() {
     igraph_matrix_complex_init(&V2, 0, 0);
     igraph_vector_init(&p, 0);
 
-    igraph_get_stochastic_sparsemat(&g, &stochastic, /*column-wise=*/ 0);  
+    igraph_sparsemat_init(&stochastic, 0, 0, 0);
+    igraph_get_stochastic_sparse(&g, &stochastic, /*column-wise=*/ 0);
 
     /* p is always the eigenvector corresponding to the 1-eigenvalue.
      * Since the graph is undirected, p is proportional to the degree vector. */
-    igraph_degree(&g, &p, igraph_vss_all(), IGRAPH_ALL, IGRAPH_LOOPS);
+    igraph_strength(&g, &p, igraph_vss_all(), IGRAPH_ALL, IGRAPH_LOOPS, NULL);
 
     which.pos = IGRAPH_EIGEN_LR;
     which.howmany = 3;
@@ -119,8 +121,8 @@ int main() {
     /* -------------- */
 
     igraph_vector_destroy(&p);
-    igraph_vector_destroy(&selcol);
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&selcol);
+    igraph_vector_int_destroy(&groups);
     igraph_matrix_destroy(&L);
     igraph_matrix_destroy(&R);
     igraph_matrix_destroy(&V);

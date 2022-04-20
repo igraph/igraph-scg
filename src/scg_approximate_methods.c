@@ -70,9 +70,9 @@
 #include <igraph/igraph_types.h>
 #include <igraph/igraph_vector.h>
 
-int igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, int *gr,
-                                   int n, int n_interv,
-                                   int maxiter) {
+igraph_error_t igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, igraph_integer_t *gr,
+                                              igraph_integer_t n, igraph_integer_t n_interv,
+                                              igraph_integer_t maxiter) {
     int i;
     igraph_vector_t centers;
 
@@ -93,8 +93,8 @@ int igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, int *gr,
     return 0;
 }
 
-int igraph_i_intervals_method(const igraph_vector_t *v, int *gr, int n,
-                              int n_interv) {
+igraph_error_t igraph_i_intervals_method(const igraph_vector_t *v, igraph_integer_t *gr, igraph_integer_t n,
+                                         igraph_integer_t n_interv) {
     int i, lo, hi, new;
     const int lft = 1;
     const int include_border = 1;
@@ -130,9 +130,9 @@ int igraph_i_intervals_method(const igraph_vector_t *v, int *gr, int n,
     return 0;
 }
 
-int igraph_i_breaks_computation(const igraph_vector_t *v,
-                                igraph_vector_t *breaks,
-                                int nb, int method) {
+igraph_error_t igraph_i_breaks_computation(const igraph_vector_t *v,
+                                           igraph_vector_t *breaks,
+                                           igraph_integer_t nb, igraph_integer_t method) {
     int i;
     igraph_real_t eps, vmin, vmax;
     igraph_vector_minmax(v, &vmin, &vmax);

@@ -43,9 +43,9 @@
 #include <igraph/igraph_vector.h>
 #include <igraph/igraph_qsort.h>
 
-int igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr, int n,
-                               int nt, int matrix, const igraph_real_t *p,
-                               igraph_real_t *value) {
+igraph_error_t igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr, igraph_integer_t n,
+                                          igraph_integer_t nt, igraph_integer_t matrix, const igraph_real_t *p,
+                                          igraph_real_t *value) {
 
     int i, non_ties, q, j, l, part_ind, col;
     igraph_i_scg_indval_t *vs = IGRAPH_CALLOC(n, igraph_i_scg_indval_t);
@@ -183,12 +183,12 @@ int igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer_t *gr, int
     return 0;
 }
 
-int igraph_i_cost_matrix(igraph_real_t*Cv, const igraph_i_scg_indval_t *vs,
-                         int n,  int matrix, const igraph_vector_t *ps) {
+igraph_error_t igraph_i_cost_matrix(igraph_real_t*Cv, const igraph_i_scg_indval_t *vs,
+                                    igraph_integer_t n, igraph_integer_t matrix, const igraph_vector_t *ps) {
 
     /* if symmetric of Laplacian SCG -> same Cv */
     if (matrix == 1 || matrix == 2) {
-        int i, j;
+        igraph_integer_t i, j;
         igraph_vector_t w, w2;
 
         IGRAPH_VECTOR_INIT_FINALLY(&w, n + 1);
@@ -218,7 +218,7 @@ int igraph_i_cost_matrix(igraph_real_t*Cv, const igraph_i_scg_indval_t *vs,
     /* if stochastic */
     /* TODO: optimize it to O(n^2) instead of O(n^3) (as above) */
     if (matrix == 3) {
-        int i, j, k;
+        igraph_integer_t i, j, k;
         igraph_real_t t1, t2;
         for (i = 0; i < n; i++) {
             for (j = i + 1; j < n; j++) {

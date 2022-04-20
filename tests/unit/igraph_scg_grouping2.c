@@ -21,22 +21,22 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 int main() {
 
     igraph_t g;
     igraph_matrix_t adj, V;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_eigen_which_t which;
 
     igraph_matrix_init(&adj, 0, 0);
     igraph_matrix_init(&V, 0, 0);
-    igraph_vector_init(&groups, 0);
+    igraph_vector_int_init(&groups, 0);
 
-    igraph_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
+    igraph_kary_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
-    igraph_get_adjacency(&g, &adj, IGRAPH_GET_ADJACENCY_BOTH, /*eids=*/ 0);
+    igraph_get_adjacency(&g, &adj, IGRAPH_GET_ADJACENCY_BOTH);
 
     which.pos = IGRAPH_EIGEN_LM;
     which.howmany = 1;
@@ -49,25 +49,25 @@ int main() {
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_OPTIMUM, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_INTERV_KM, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_INTERV, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     igraph_scg_grouping(&V, &groups, /*(ignored) intervals=*/ 0,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_EXACT, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
 
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&groups);
     igraph_matrix_destroy(&V);
     igraph_matrix_destroy(&adj);
     igraph_destroy(&g);

@@ -33,8 +33,8 @@
 
 #include "scg_headers.h"
 
-int igraph_i_kmeans_Lloyd(const igraph_vector_t *x, int n, int p,
-                          igraph_vector_t *cen, int k, int *cl, int maxiter) {
+igraph_error_t igraph_i_kmeans_Lloyd(const igraph_vector_t *x, igraph_integer_t n, igraph_integer_t p,
+                                     igraph_vector_t *centers, igraph_integer_t k, igraph_integer_t *cl, igraph_integer_t maxiter) {
 
     int iter, i, j, c, it, inew = 0;
     igraph_real_t best, dd, tmp;
@@ -55,7 +55,7 @@ int igraph_i_kmeans_Lloyd(const igraph_vector_t *x, int n, int p,
             for (j = 0; j < k; j++) {
                 dd = 0.0;
                 for (c = 0; c < p; c++) {
-                    tmp = VECTOR(*x)[i + n * c] - VECTOR(*cen)[j + k * c];
+                    tmp = VECTOR(*x)[i + n * c] - VECTOR(*centers)[j + k * c];
                     dd += tmp * tmp;
                 }
                 if (dd < best) {
@@ -74,7 +74,7 @@ int igraph_i_kmeans_Lloyd(const igraph_vector_t *x, int n, int p,
 
         /* update each centre */
         for (j = 0; j < k * p; j++) {
-            VECTOR(*cen)[j] = 0.0;
+            VECTOR(*centers)[j] = 0.0;
         }
         for (j = 0; j < k; j++) {
             VECTOR(nc)[j] = 0;
@@ -83,11 +83,11 @@ int igraph_i_kmeans_Lloyd(const igraph_vector_t *x, int n, int p,
             it = cl[i] - 1;
             VECTOR(nc)[it]++;
             for (c = 0; c < p; c++) {
-                VECTOR(*cen)[it + c * k] += VECTOR(*x)[i + c * n];
+                VECTOR(*centers)[it + c * k] += VECTOR(*x)[i + c * n];
             }
         }
         for (j = 0; j < k * p; j++) {
-            VECTOR(*cen)[j] /= VECTOR(nc)[j % k];
+            VECTOR(*centers)[j] /= VECTOR(nc)[j % k];
         }
     }
     igraph_vector_int_destroy(&nc);

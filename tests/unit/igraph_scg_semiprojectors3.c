@@ -21,7 +21,7 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 int main() {
 
@@ -32,16 +32,16 @@ int main() {
     igraph_matrix_t V;
     igraph_matrix_complex_t V2;
     igraph_sparsemat_t laplacian;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_eigen_which_t which;
 
     igraph_matrix_init(&L, 0, 0);
     igraph_matrix_init(&R, 0, 0);
     igraph_matrix_init(&V, 0, 0);
     igraph_matrix_complex_init(&V2, 0, 0);
-    igraph_vector_init(&groups, 0);
+    igraph_vector_int_init(&groups, 0);
 
-    igraph_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
+    igraph_kary_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
     igraph_sparsemat_init(&laplacian, nodes, nodes, igraph_ecount(&g) * 2);
 
@@ -113,7 +113,7 @@ int main() {
     igraph_matrix_destroy(&R);
     igraph_matrix_destroy(&V);
     igraph_matrix_complex_destroy(&V2);
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&groups);
     igraph_sparsemat_destroy(&laplacian);
     igraph_destroy(&g);
 

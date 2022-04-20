@@ -21,38 +21,38 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 #include "test_utilities.inc"
 
 int main() {
 
     igraph_t g;
-    igraph_vector_t ev;
+    igraph_vector_int_t ev;
     igraph_t scg_graph;
     igraph_matrix_t scg_matrix;
     igraph_sparsemat_t scg_sparsemat;
     igraph_matrix_t L, R;
     igraph_sparsemat_t Lsparse, Rsparse;
     igraph_vector_t p;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_vector_complex_t eval;
     igraph_matrix_complex_t evec;
 
-    igraph_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
+    igraph_kary_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
-    igraph_vector_init(&ev, 1);
+    igraph_vector_int_init(&ev, 1);
     igraph_matrix_init(&L, 0, 0);
     igraph_matrix_init(&R, 0, 0);
     igraph_matrix_init(&scg_matrix, 0, 0);
     igraph_vector_init(&p, 0);
-    igraph_vector_init(&groups, 0);
+    igraph_vector_int_init(&groups, 0);
     igraph_vector_complex_init(&eval, 0);
     igraph_matrix_complex_init(&evec, 0, 0);
 
 #define CALLSTO() do {                           \
         igraph_vector_resize(&p, 0);                     \
-        igraph_vector_resize(&groups, 0);                    \
+        igraph_vector_int_resize(&groups, 0);                    \
         igraph_vector_complex_resize(&eval, 0);              \
         igraph_matrix_complex_resize(&evec, 0, 0);               \
         igraph_scg_stochastic(&g, /*matrix=*/ 0, /*sparsemat=*/ 0, &ev,  \
@@ -66,13 +66,13 @@ int main() {
     } while (0)
 
 #define FIXSMALL(eps) do { \
-    long int i, j, ncol, nrow; \
+    igraph_integer_t i, j, ncol, nrow; \
     ncol = igraph_vector_complex_size(&eval); \
     for (i = 0; i < ncol; i++) { \
-        if (fabs((double)IGRAPH_REAL(VECTOR(eval)[i])) < eps) { \
+        if (fabs((double)IGRAPH_REAL(VECTOR(eval)[i])) < (eps)) { \
             IGRAPH_REAL(VECTOR(eval)[i]) = 0; \
         } \
-        if (fabs((double)IGRAPH_IMAG(VECTOR(eval)[i])) < eps) { \
+        if (fabs((double)IGRAPH_IMAG(VECTOR(eval)[i])) < (eps)) { \
             IGRAPH_IMAG(VECTOR(eval)[i]) = 0; \
         } \
     } \
@@ -80,10 +80,10 @@ int main() {
     ncol = igraph_matrix_complex_ncol(&evec); \
     for (i = 0; i < nrow; i++) { \
         for (j = 0; j < ncol; j++) { \
-            if (fabs((double)IGRAPH_REAL(MATRIX(evec, i, j))) < eps) { \
+            if (fabs((double)IGRAPH_REAL(MATRIX(evec, i, j))) < (eps)) { \
                 IGRAPH_REAL(MATRIX(evec, i, j)) = 0; \
             } \
-            if (fabs((double)IGRAPH_IMAG(MATRIX(evec, i, j))) < eps) { \
+            if (fabs((double)IGRAPH_IMAG(MATRIX(evec, i, j))) < (eps)) { \
                 IGRAPH_IMAG(MATRIX(evec, i, j)) = 0; \
             } \
         } \
@@ -93,7 +93,7 @@ int main() {
 #define PRINTRES()                      \
     do {                              \
         printf("--------------------------------\n");       \
-        igraph_vector_print(&groups);               \
+        igraph_vector_int_print(&groups);               \
         printf("---\n");                        \
         igraph_vector_complex_print(&eval);             \
         print_matrix_complex_first_row_positive(&evec);             \
@@ -126,7 +126,7 @@ int main() {
     igraph_sparsemat_destroy(&Lsparse);
     igraph_sparsemat_destroy(&Rsparse);
 
-    igraph_vector_resize(&ev, 2);
+    igraph_vector_int_resize(&ev, 2);
     VECTOR(ev)[0] = 1;
     VECTOR(ev)[1] = 3;
     CALLSTO();
@@ -139,12 +139,12 @@ int main() {
 
     igraph_matrix_complex_destroy(&evec);
     igraph_vector_complex_destroy(&eval);
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&groups);
     igraph_vector_destroy(&p);
     igraph_matrix_destroy(&scg_matrix);
     igraph_matrix_destroy(&L);
     igraph_matrix_destroy(&R);
-    igraph_vector_destroy(&ev);
+    igraph_vector_int_destroy(&ev);
     igraph_destroy(&g);
 
     /* -------------------------------------------------------------------- */

@@ -50,7 +50,7 @@ int igraph_i_compare_ind_val(const void *a, const void *b) {
 int igraph_i_compare_groups(const void *a, const void *b) {
     igraph_i_scg_groups_t *arg1 = (igraph_i_scg_groups_t *) a;
     igraph_i_scg_groups_t *arg2 = (igraph_i_scg_groups_t *) b;
-    int i;
+    igraph_integer_t i;
     for (i = 0; i < arg1->n; i++) {
         if (arg1->gr[i] > arg2->gr[i]) {
             return 1;
@@ -84,7 +84,7 @@ int igraph_i_compare_int(const void *a, const void *b) {
 
 /* allocate a igraph_real_t symmetrix matrix with dimension size x size
    in vector format*/
-igraph_real_t *igraph_i_real_sym_matrix(int size)  {
+igraph_real_t *igraph_i_real_sym_matrix(igraph_integer_t size)  {
     igraph_real_t *S = IGRAPH_CALLOC(size * (size + 1) / 2, igraph_real_t);
     if (!S) {
         igraph_error("allocation failure in real_sym_matrix()", __FILE__, __LINE__, IGRAPH_ENOMEM);

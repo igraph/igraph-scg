@@ -21,7 +21,7 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 #define SIZE (1000)
 
@@ -30,10 +30,10 @@ int main() {
     igraph_matrix_t M, M2;
     igraph_vector_t lambda;
     igraph_matrix_t V;
-    igraph_vector_t groups;
-    igraph_vector_t ivec;
-    int i, j;
-    int n;
+    igraph_vector_int_t groups;
+    igraph_vector_int_t ivec;
+    igraph_integer_t i, j;
+    igraph_integer_t n;
 
     igraph_rng_seed(igraph_rng_default(), 42);
 
@@ -64,18 +64,18 @@ int main() {
 
     /* Grouping */
 
-    igraph_vector_init(&groups, 0);
-    igraph_vector_init(&ivec, 2);
+    igraph_vector_int_init(&groups, 0);
+    igraph_vector_int_init(&ivec, 2);
     VECTOR(ivec)[0] = 2;
     VECTOR(ivec)[1] = 3;
     igraph_scg_grouping(&V, &groups, /*invervals=*/ 0,
                         /*intervals_vector=*/ &ivec, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_OPTIMUM, /*p=*/ 0, /*maxiter=*/ 100);
 
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
-    igraph_vector_destroy(&ivec);
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&ivec);
+    igraph_vector_int_destroy(&groups);
     igraph_vector_destroy(&lambda);
     igraph_matrix_destroy(&V);
     igraph_matrix_destroy(&M);

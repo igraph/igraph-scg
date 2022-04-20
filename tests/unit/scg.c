@@ -21,29 +21,29 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 int main() {
 
     igraph_t g;
-    igraph_vector_t ev;
+    igraph_vector_int_t ev;
     igraph_t scg_graph;
     igraph_matrix_t scg_matrix;
     igraph_sparsemat_t scg_sparsemat;
     igraph_matrix_t L, R;
     igraph_sparsemat_t Lsparse, Rsparse;
     igraph_matrix_t input_matrix;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_vector_t eval;
     igraph_matrix_t evec;
 
-    igraph_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
+    igraph_kary_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
-    igraph_vector_init(&ev, 1);
+    igraph_vector_int_init(&ev, 1);
     igraph_matrix_init(&L, 0, 0);
     igraph_matrix_init(&R, 0, 0);
     igraph_matrix_init(&scg_matrix, 0, 0);
-    igraph_vector_init(&groups, 0);
+    igraph_vector_int_init(&groups, 0);
     igraph_vector_init(&eval, 0);
     igraph_matrix_init(&evec, 0, 0);
 
@@ -64,7 +64,7 @@ int main() {
         printf("------------------------------------\n");       \
         igraph_write_graph_edgelist(&scg_graph, stdout);        \
         printf("---\n");                        \
-        igraph_vector_print(&groups);               \
+        igraph_vector_int_print(&groups);               \
         printf("---\n");                        \
         igraph_vector_print(&eval);                 \
         igraph_matrix_print(&evec);                 \
@@ -93,7 +93,7 @@ int main() {
     igraph_sparsemat_destroy(&Lsparse);
     igraph_sparsemat_destroy(&Rsparse);
 
-    igraph_vector_resize(&ev, 2);
+    igraph_vector_int_resize(&ev, 2);
     VECTOR(ev)[0] = 1;
     VECTOR(ev)[1] = 3;
     CALLSYM(IGRAPH_SCG_EXACT);
@@ -116,10 +116,9 @@ int main() {
                                          &Lsparse, &Rsparse); } while (0)
 
     igraph_matrix_init(&input_matrix, 0, 0);
-    igraph_get_adjacency(&g, &input_matrix, IGRAPH_GET_ADJACENCY_BOTH,
-                         /* eids= */ 0);
+    igraph_get_adjacency(&g, &input_matrix, IGRAPH_GET_ADJACENCY_BOTH);
 
-    igraph_vector_resize(&ev, 1);
+    igraph_vector_int_resize(&ev, 1);
     VECTOR(ev)[0] = 1;
     CALLSYM2(IGRAPH_SCG_EXACT);
     PRINTRES();
@@ -136,7 +135,7 @@ int main() {
     igraph_sparsemat_destroy(&Lsparse);
     igraph_sparsemat_destroy(&Rsparse);
 
-    igraph_vector_resize(&ev, 2);
+    igraph_vector_int_resize(&ev, 2);
     VECTOR(ev)[0] = 1;
     VECTOR(ev)[1] = 3;
     CALLSYM2(IGRAPH_SCG_EXACT);
@@ -148,12 +147,12 @@ int main() {
 
     igraph_matrix_destroy(&evec);
     igraph_vector_destroy(&eval);
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&groups);
     igraph_matrix_destroy(&input_matrix);
     igraph_matrix_destroy(&scg_matrix);
     igraph_matrix_destroy(&L);
     igraph_matrix_destroy(&R);
-    igraph_vector_destroy(&ev);
+    igraph_vector_int_destroy(&ev);
     igraph_destroy(&g);
 
     /* -------------------------------------------------------------------- */

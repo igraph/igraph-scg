@@ -62,7 +62,7 @@ void print_matrix_first_row_positive(const igraph_matrix_t *matrix, const char* 
     igraph_matrix_t copy;
     long i, j, nrow, ncol;
 
-    igraph_matrix_copy(&copy, matrix);
+    igraph_matrix_init_copy(&copy, matrix);
 
     nrow = igraph_matrix_nrow(&copy);
     ncol = igraph_matrix_ncol(&copy);
@@ -95,7 +95,7 @@ void print_matrix_complex_first_row_positive(const igraph_matrix_complex_t *matr
     char buf[256];
     size_t len;
 
-    igraph_matrix_complex_copy(&copy, matrix);
+    igraph_matrix_complex_init_copy(&copy, matrix);
 
     nrow = igraph_matrix_complex_nrow(&copy);
     ncol = igraph_matrix_complex_ncol(&copy);
@@ -144,16 +144,6 @@ void print_matrix_complex_first_row_positive(const igraph_matrix_complex_t *matr
     }
 
     igraph_matrix_complex_destroy(&copy);
-}
-
-void print_spmatrix(igraph_spmatrix_t *m) {
-    long int i, j;
-    for (i = 0; i < igraph_spmatrix_nrow(m); i++) {
-        for (j = 0; j < igraph_spmatrix_ncol(m); j++) {
-            printf(" %8g", igraph_spmatrix_e(m, i, j));
-        }
-        printf("\n");
-    }
 }
 
 #define VERIFY_FINALLY_STACK() \

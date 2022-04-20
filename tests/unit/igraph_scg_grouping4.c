@@ -21,7 +21,7 @@
 
 */
 
-#include <igraph/igraph.h>
+#include "igraph_scg.h"
 
 int main() {
 
@@ -30,14 +30,14 @@ int main() {
     igraph_matrix_t V;
     igraph_matrix_complex_t V2;
     igraph_sparsemat_t laplacian;
-    igraph_vector_t groups;
+    igraph_vector_int_t groups;
     igraph_eigen_which_t which;
 
-    igraph_tree(&g, nodes, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
+    igraph_kary_tree(&g, nodes, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
     igraph_matrix_complex_init(&V2, 0, 0);
     igraph_matrix_init(&V, 0, 0);
-    igraph_vector_init(&groups, 0);
+    igraph_vector_int_init(&groups, 0);
 
     igraph_sparsemat_init(&laplacian, 0, 0, 0);
     igraph_laplacian(&g, /*res=*/ 0, /*sparseres=*/ &laplacian,
@@ -57,32 +57,32 @@ int main() {
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_LAPLACIAN,
                         IGRAPH_SCG_OPTIMUM, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     /* ------------ */
 
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_LAPLACIAN,
                         IGRAPH_SCG_INTERV_KM, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     /* ------------ */
 
     igraph_scg_grouping(&V, &groups, /*intervals=*/ 3,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_LAPLACIAN,
                         IGRAPH_SCG_INTERV, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     /* ------------ */
 
     igraph_scg_grouping(&V, &groups, /*(ignored) intervals=*/ 0,
                         /*intervals_vector=*/ 0, IGRAPH_SCG_LAPLACIAN,
                         IGRAPH_SCG_EXACT, /*p=*/ 0, /*maxiter=*/ 10000);
-    igraph_vector_print(&groups);
+    igraph_vector_int_print(&groups);
 
     /* ------------ */
 
-    igraph_vector_destroy(&groups);
+    igraph_vector_int_destroy(&groups);
     igraph_matrix_destroy(&V);
     igraph_matrix_complex_destroy(&V2);
     igraph_sparsemat_destroy(&laplacian);
