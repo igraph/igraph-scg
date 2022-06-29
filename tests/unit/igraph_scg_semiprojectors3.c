@@ -45,8 +45,10 @@ int main() {
 
     igraph_sparsemat_init(&laplacian, nodes, nodes, igraph_ecount(&g) * 2);
 
-    igraph_laplacian(&g, /*res=*/ 0, /*sparseres=*/ &laplacian,
-                     /*normalized=*/ 0, /*weights=*/ 0);
+    igraph_get_laplacian_sparse(
+        &g, &laplacian, IGRAPH_ALL, IGRAPH_LAPLACIAN_UNNORMALIZED,
+        /* weights= */ 0
+    );
 
     which.pos = IGRAPH_EIGEN_LM;
     which.howmany = 1;

@@ -50,12 +50,12 @@ int main() {
 #define CALLSYM(algo) do {                      \
         igraph_vector_clear(&eval);                     \
         igraph_matrix_resize(&evec, 0, 0);                  \
-        igraph_scg_adjacency(&g, /*matrix=*/ 0, /*sparsemat=*/ 0, &ev,  \
+        igraph_scg_adjacency(&g, /*matrix=*/ 0, /*sparsemat=*/ 0, /*weights=*/ 0, &ev,  \
                              /* intervals= */ 3, /* intervals_vector= */ 0, \
                              /* algorithm= */ algo, &eval, &evec,       \
                              /* groups= */ &groups, /* use_arpack= */ 0,    \
                              /* maxiter= */ 0, &scg_graph, &scg_matrix, \
-                             &scg_sparsemat, &L, &R,            \
+                             &scg_sparsemat, /* scg_weights= */ 0, &L, &R, \
                              &Lsparse, &Rsparse); } while(0)
 
 
@@ -106,17 +106,20 @@ int main() {
 #define CALLSYM2(algo) do {                     \
         igraph_vector_clear(&eval);                     \
         igraph_matrix_resize(&evec, 0, 0);                  \
-        igraph_scg_adjacency(/* graph=*/ 0, &input_matrix, /*sparsemat=*/ 0, \
+        igraph_scg_adjacency(/* graph=*/ 0, &input_matrix, /*sparsemat=*/ 0, /*weights=*/ 0,  \
                                          &ev, /* intervals= */ 3,           \
                                          /* intervals_vector= */ 0,         \
                                          /* algorithm= */ algo, &eval, &evec,       \
                                          /* groups= */ &groups, /* use_arpack= */ 0,    \
                                          /* maxiter= */ 0, &scg_graph, &scg_matrix, \
-                                         &scg_sparsemat, &L, &R,            \
+                                         &scg_sparsemat, /* scg_weights= */ 0, &L, &R, \
                                          &Lsparse, &Rsparse); } while (0)
 
     igraph_matrix_init(&input_matrix, 0, 0);
-    igraph_get_adjacency(&g, &input_matrix, IGRAPH_GET_ADJACENCY_BOTH);
+    igraph_get_adjacency(
+        &g, &input_matrix, IGRAPH_GET_ADJACENCY_BOTH,
+        /* weights = */ 0, /* loops = */ IGRAPH_LOOPS_ONCE
+    );
 
     igraph_vector_int_resize(&ev, 1);
     VECTOR(ev)[0] = 1;

@@ -71,7 +71,11 @@ int main() {
     igraph_scg_grouping(&V, &groups, /*invervals=*/ 0,
                         /*intervals_vector=*/ &ivec, IGRAPH_SCG_SYMMETRIC,
                         IGRAPH_SCG_OPTIMUM, /*p=*/ 0, /*maxiter=*/ 100);
-
+    
+    /* Vertices are grouped into 2 * 3 groups according to ivec, so check
+     * whether 'groups' contains values between 0 and 5, inclusive, before
+     * printing it */
+    IGRAPH_ASSERT(igraph_vector_int_min(&groups) >= 0 && igraph_vector_int_max(&groups) <= 5);
     igraph_vector_int_print(&groups);
 
     igraph_vector_int_destroy(&ivec);

@@ -36,7 +36,10 @@ int main() {
 
     igraph_kary_tree(&g, 10, /* children= */ 3, IGRAPH_TREE_UNDIRECTED);
 
-    igraph_get_adjacency(&g, &adj, IGRAPH_GET_ADJACENCY_BOTH);
+    igraph_get_adjacency(
+        &g, &adj, IGRAPH_GET_ADJACENCY_BOTH,
+        /* weights = */ 0, /* loops = */ IGRAPH_LOOPS_ONCE
+    );
 
     which.pos = IGRAPH_EIGEN_LM;
     which.howmany = 1;

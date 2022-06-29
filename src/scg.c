@@ -1123,15 +1123,16 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
                                    igraph_t *scg_graph,
                                    igraph_matrix_t *scg_matrix,
                                    igraph_sparsemat_t *scg_sparsemat,
+                                   igraph_vector_t *scg_weights,
                                    igraph_bool_t directed) {
 
     /* We need to calculate either scg_matrix (if input is dense), or
        scg_sparsemat (if input is sparse). For the latter we might need
        to temporarily use another matrix. */
 
-    igraph_vector_t weights;
+    igraph_vector_t dummy_weights;
 
-    IGRAPH_VECTOR_INIT_FINALLY(&weights, 0);
+    IGRAPH_VECTOR_INIT_FINALLY(&dummy_weights, 0);
 
     if (matrix) {
         igraph_matrix_t *my_scg_matrix = scg_matrix, v_scg_matrix;
@@ -1169,8 +1170,9 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
                 IGRAPH_CHECK(igraph_weighted_adjacency(scg_graph, my_scg_matrix,
                                                        directed ?
                                                        IGRAPH_ADJ_DIRECTED :
-                                                       IGRAPH_ADJ_UNDIRECTED,
-                                                       &weights, IGRAPH_LOOPS_TWICE));
+                                                       IGRAPH_ADJ_MAX,
+                                                       scg_weights ? scg_weights : &dummy_weights,
+                                                       IGRAPH_LOOPS_TWICE));
             } else {
                 igraph_integer_t i, j, n = igraph_matrix_nrow(my_scg_matrix);
                 igraph_matrix_t tmp;
@@ -1183,8 +1185,9 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
                 }
                 IGRAPH_CHECK(igraph_weighted_adjacency(scg_graph, &tmp, directed ?
                                                        IGRAPH_ADJ_DIRECTED :
-                                                       IGRAPH_ADJ_UNDIRECTED,
-                                                       &weights, IGRAPH_NO_LOOPS));
+                                                       IGRAPH_ADJ_MAX,
+                                                       scg_weights ? scg_weights : &dummy_weights,
+                                                       IGRAPH_NO_LOOPS));
                 igraph_matrix_destroy(&tmp);
                 IGRAPH_FINALLY_CLEAN(1);
             }
@@ -1240,7 +1243,10 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
         if (scg_graph) {
             if (type != IGRAPH_SCG_LAPLACIAN) {
                 IGRAPH_CHECK(igraph_sparse_weighted_adjacency(
-                    scg_graph, my_scg_sparsemat, directed, &weights, IGRAPH_LOOPS_TWICE
+                    scg_graph, my_scg_sparsemat,
+                    directed ? IGRAPH_ADJ_DIRECTED : IGRAPH_ADJ_MAX,
+                    scg_weights ? scg_weights : &dummy_weights,
+                    IGRAPH_LOOPS_TWICE
                 ));
             } else {
                 igraph_sparsemat_t tmp;
@@ -1248,7 +1254,10 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
                 IGRAPH_FINALLY(igraph_sparsemat_destroy, &tmp);
                 IGRAPH_CHECK(igraph_sparsemat_neg(&tmp));
                 IGRAPH_CHECK(igraph_sparse_weighted_adjacency(
-                    scg_graph, &tmp, directed, &weights, IGRAPH_NO_LOOPS
+                    scg_graph, &tmp,
+                    directed ? IGRAPH_ADJ_DIRECTED : IGRAPH_ADJ_MAX,
+                    scg_weights ? scg_weights : &dummy_weights,
+                    IGRAPH_NO_LOOPS
                 ));
                 igraph_sparsemat_destroy(&tmp);
                 IGRAPH_FINALLY_CLEAN(1);
@@ -1273,12 +1282,7 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
         }
     }
 
-    if (scg_graph) {
-        /* TODO(ntamas): this is now specific to the C attribute handler only */
-        IGRAPH_CHECK(igraph_cattribute_EAN_setv(scg_graph, "weight", &weights));
-    }
-
-    igraph_vector_destroy(&weights);
+    igraph_vector_destroy(&dummy_weights);
     IGRAPH_FINALLY_CLEAN(1);
 
     return IGRAPH_SUCCESS;
@@ -1287,6 +1291,7 @@ static igraph_error_t igraph_i_scg_get_result(igraph_scg_matrix_t type,
 static igraph_error_t igraph_i_scg_common_checks(const igraph_t *graph,
                                                  const igraph_matrix_t *matrix,
                                                  const igraph_sparsemat_t *sparsemat,
+                                                 const igraph_vector_t *weights,
                                                  const igraph_vector_int_t *ev,
                                                  igraph_integer_t nt,
                                                  const igraph_vector_int_t *nt_vec,
@@ -1314,6 +1319,16 @@ static igraph_error_t igraph_i_scg_common_checks(const igraph_t *graph,
         no_of_nodes = igraph_matrix_nrow(matrix);
     } else if (sparsemat) {
         no_of_nodes = igraph_sparsemat_nrow(sparsemat);
+    }
+
+    if (weights) {
+        if (!graph) {
+            IGRAPH_ERROR("Weights must be specified only if the input is a graph", IGRAPH_EINVAL);
+        }
+
+        if (igraph_vector_size(weights) != igraph_ecount(graph)) {
+            IGRAPH_ERROR("Invalid weight vector length", IGRAPH_EINVAL);
+        }
     }
 
     if ((matrix && igraph_matrix_ncol(matrix) != no_of_nodes) ||
@@ -1390,8 +1405,10 @@ static igraph_error_t igraph_i_scg_common_checks(const igraph_t *graph,
  * \param sparsemat The input sparse matrix. Exactly one of \p graph,
  *    \p matrix and \p sparsemat must be given, the other two must be
  *    \c NULL pointers.
+ * \param weights The weights of the edges of the input graph; \c NULL
+ *    if the graph is unweighted. Must be \c NULL when \p graph is \c NULL.
  * \param ev A vector of positive integers giving the indexes of the
- *   eigenpairs to be preserved. 1 designates the eigenvalue with
+ *     eigenpairs to be preserved. 1 designates the eigenvalue with
  *    largest algebraic value, 2 the one with second largest algebraic
  *    value, etc.
  * \param nt Positive integer. When \p algo is \c IGRAPH_SCG_OPTIMUM,
@@ -1454,6 +1471,7 @@ static igraph_error_t igraph_i_scg_common_checks(const igraph_t *graph,
 igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
                                     const igraph_matrix_t *matrix,
                                     const igraph_sparsemat_t *sparsemat,
+                                    const igraph_vector_t *weights,
                                     const igraph_vector_int_t *ev,
                                     igraph_integer_t nt,
                                     const igraph_vector_int_t *nt_vec,
@@ -1466,6 +1484,7 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
                                     igraph_t *scg_graph,
                                     igraph_matrix_t *scg_matrix,
                                     igraph_sparsemat_t *scg_sparsemat,
+                                    igraph_vector_t *scg_weights,
                                     igraph_matrix_t *L,
                                     igraph_matrix_t *R,
                                     igraph_sparsemat_t *Lsparse,
@@ -1489,12 +1508,11 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
     igraph_integer_t no_of_nodes;
     igraph_integer_t evmin, evmax;
     igraph_bool_t directed;
-    igraph_vector_t weights;
 
     /* --------------------------------------------------------------------*/
     /* Argument checks */
 
-    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat,
+    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat, weights,
                                             ev, nt, nt_vec,
                                             vectors, 0, groups, scg_graph,
                                             scg_matrix, scg_sparsemat,
@@ -1518,11 +1536,7 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
         mysparsemat = &real_sparsemat;
         IGRAPH_CHECK(igraph_sparsemat_init(mysparsemat, 0, 0, 0));
         IGRAPH_FINALLY(igraph_sparsemat_destroy, mysparsemat);
-        IGRAPH_VECTOR_INIT_FINALLY(&weights, 0);
-        IGRAPH_CHECK(igraph_i_attribute_get_numeric_vertex_attr(graph, "weight", igraph_vss_all(), &weights));
-        IGRAPH_CHECK(igraph_get_adjacency_sparse(graph, mysparsemat, IGRAPH_GET_ADJACENCY_BOTH, &weights, IGRAPH_LOOPS_TWICE));
-        igraph_vector_destroy(&weights);
-        IGRAPH_FINALLY_CLEAN(1);
+        IGRAPH_CHECK(igraph_get_adjacency_sparse(graph, mysparsemat, IGRAPH_GET_ADJACENCY_BOTH, weights, IGRAPH_LOOPS_TWICE));
     }
 
     /* -------------------------------------------------------------------- */
@@ -1629,7 +1643,8 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
                                          matrix, mysparsemat,
                                          Lsparse, &Rsparse_t,
                                          scg_graph, scg_matrix,
-                                         scg_sparsemat, directed));
+                                         scg_sparsemat, scg_weights,
+                                         directed));
 
     /* -------------------------------------------------------------------- */
     /* Clean up */
@@ -1668,6 +1683,8 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
  * \param sparsemat The input sparse matrix. Exactly one of \p graph,
  *    \p matrix and \p sparsemat must be given, the other two must be
  *    \c NULL pointers.
+ * \param weights The weights of the edges of the input graph; \c NULL
+ *    if the graph is unweighted. Must be \c NULL when \p graph is \c NULL.
  * \param ev A vector of positive integers giving the indexes of the
  *   eigenpairs to be preserved. 1 designates the eigenvalue with
  *    largest magnitude, 2 the one with second largest magnitude, etc.
@@ -1739,6 +1756,7 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
 igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
                                      const igraph_matrix_t *matrix,
                                      const igraph_sparsemat_t *sparsemat,
+                                    const igraph_vector_t *weights,
                                      const igraph_vector_int_t *ev,
                                      igraph_integer_t nt,
                                      const igraph_vector_int_t *nt_vec,
@@ -1753,6 +1771,7 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
                                      igraph_t *scg_graph,
                                      igraph_matrix_t *scg_matrix,
                                      igraph_sparsemat_t *scg_sparsemat,
+                                     igraph_vector_t *scg_weights,
                                      igraph_matrix_t *L,
                                      igraph_matrix_t *R,
                                      igraph_sparsemat_t *Lsparse,
@@ -1779,12 +1798,11 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
     igraph_integer_t no_of_ev = igraph_vector_int_size(ev);
     igraph_bool_t tmp_lsparse = !Lsparse, tmp_rsparse = !Rsparse;
     igraph_sparsemat_t myLsparse, myRsparse, tmpsparse, Rsparse_t;
-    igraph_vector_t weights;
 
     /* --------------------------------------------------------------------*/
     /* Argument checks */
 
-    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat,
+    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat, weights,
                                             ev, nt, nt_vec,
                                             0, vectors, groups, scg_graph,
                                             scg_matrix, scg_sparsemat, p,
@@ -1805,13 +1823,9 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
         mysparsemat = &real_sparsemat;
         IGRAPH_CHECK(igraph_sparsemat_init(mysparsemat, 0, 0, 0));
         IGRAPH_FINALLY(igraph_sparsemat_destroy, mysparsemat);
-        IGRAPH_VECTOR_INIT_FINALLY(&weights, 0);
-        IGRAPH_CHECK(igraph_i_attribute_get_numeric_vertex_attr(graph, "weight", igraph_vss_all(), &weights));
         IGRAPH_CHECK(igraph_get_stochastic_sparse(
-            graph, mysparsemat, norm == IGRAPH_SCG_NORM_COL, &weights
+            graph, mysparsemat, norm == IGRAPH_SCG_NORM_COL, weights
         ));
-        igraph_vector_destroy(&weights);
-        IGRAPH_FINALLY_CLEAN(1);
     } else if (matrix) {
         mymatrix = &real_matrix;
         IGRAPH_CHECK(igraph_i_matrix_stochastic(matrix, mymatrix, norm));
@@ -1986,7 +2000,8 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
                                          mymatrix, mysparsemat,
                                          Lsparse, &Rsparse_t,
                                          scg_graph, scg_matrix,
-                                         scg_sparsemat, /*directed=*/ 1));
+                                         scg_sparsemat, scg_weights,
+                                         /*directed=*/ 1));
 
     /* -------------------------------------------------------------------- */
     /* Clean up */
@@ -2031,6 +2046,8 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
  * \param sparsemat The input sparse matrix. Exactly one of \p graph,
  *    \p matrix and \p sparsemat must be given, the other two must be
  *    \c NULL pointers.
+ * \param weights The weights of the edges of the input graph; \c NULL
+ *    if the graph is unweighted. Must be \c NULL when \p graph is \c NULL.
  * \param ev A vector of positive integers giving the indexes of the
  *   eigenpairs to be preserved. 1 designates the eigenvalue with
  *    largest magnitude, 2 the one with second largest magnitude, etc.
@@ -2100,6 +2117,7 @@ igraph_error_t igraph_scg_stochastic(const igraph_t *graph,
 igraph_error_t igraph_scg_laplacian(const igraph_t *graph,
                                     const igraph_matrix_t *matrix,
                                     const igraph_sparsemat_t *sparsemat,
+                                    const igraph_vector_t *weights,
                                     const igraph_vector_int_t *ev,
                                     igraph_integer_t nt,
                                     const igraph_vector_int_t *nt_vec,
@@ -2114,6 +2132,7 @@ igraph_error_t igraph_scg_laplacian(const igraph_t *graph,
                                     igraph_t *scg_graph,
                                     igraph_matrix_t *scg_matrix,
                                     igraph_sparsemat_t *scg_sparsemat,
+                                    igraph_vector_t *scg_weights,
                                     igraph_matrix_t *L,
                                     igraph_matrix_t *R,
                                     igraph_sparsemat_t *Lsparse,
@@ -2138,14 +2157,13 @@ igraph_error_t igraph_scg_laplacian(const igraph_t *graph,
     igraph_integer_t no_of_ev = igraph_vector_int_size(ev);
     igraph_bool_t tmp_lsparse = !Lsparse, tmp_rsparse = !Rsparse;
     igraph_sparsemat_t myLsparse, myRsparse, tmpsparse, Rsparse_t;
-    igraph_vector_t weights;
 
     IGRAPH_UNUSED(direction);
 
     /* --------------------------------------------------------------------*/
     /* Argument checks */
 
-    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat,
+    IGRAPH_CHECK(igraph_i_scg_common_checks(graph, matrix, sparsemat, weights,
                                             ev, nt, nt_vec,
                                             0, vectors, groups, scg_graph,
                                             scg_matrix, scg_sparsemat, /*p=*/ 0,
@@ -2166,13 +2184,9 @@ igraph_error_t igraph_scg_laplacian(const igraph_t *graph,
         mysparsemat = &real_sparsemat;
         IGRAPH_CHECK(igraph_sparsemat_init(mysparsemat, 0, 0, 0));
         IGRAPH_FINALLY(igraph_sparsemat_destroy, mysparsemat);
-        IGRAPH_VECTOR_INIT_FINALLY(&weights, 0);
-        IGRAPH_CHECK(igraph_i_attribute_get_numeric_vertex_attr(graph, "weight", igraph_vss_all(), &weights));
         IGRAPH_CHECK(igraph_get_laplacian_sparse(
-            graph, mysparsemat, IGRAPH_ALL, IGRAPH_LAPLACIAN_UNNORMALIZED, &weights
+            graph, mysparsemat, IGRAPH_ALL, IGRAPH_LAPLACIAN_UNNORMALIZED, weights
         ));
-        igraph_vector_destroy(&weights);
-        IGRAPH_FINALLY_CLEAN(1);
     } else if (matrix) {
         mymatrix = &real_matrix;
         IGRAPH_MATRIX_INIT_FINALLY(mymatrix, no_of_nodes, no_of_nodes);
@@ -2292,7 +2306,8 @@ igraph_error_t igraph_scg_laplacian(const igraph_t *graph,
                                          mymatrix, mysparsemat,
                                          Lsparse, &Rsparse_t,
                                          scg_graph, scg_matrix,
-                                         scg_sparsemat, /*directed=*/ 1));
+                                         scg_sparsemat, scg_weights,
+                                         /*directed=*/ 1));
 
     /* -------------------------------------------------------------------- */
     /* Clean up */

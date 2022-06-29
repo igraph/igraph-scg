@@ -52,7 +52,7 @@ int main() {
     igraph_vector_init(&p, 0);
 
     igraph_sparsemat_init(&stochastic, 0, 0, 0);
-    igraph_get_stochastic_sparse(&g, &stochastic, /*column-wise=*/ 0);
+    igraph_get_stochastic_sparse(&g, &stochastic, /*column-wise=*/ 0, /*weights=*/ NULL);
 
     /* p is always the eigenvector corresponding to the 1-eigenvalue.
      * Since the graph is undirected, p is proportional to the degree vector. */

@@ -55,13 +55,13 @@ int main() {
         igraph_vector_int_resize(&groups, 0);                    \
         igraph_vector_complex_resize(&eval, 0);              \
         igraph_matrix_complex_resize(&evec, 0, 0);               \
-        igraph_scg_stochastic(&g, /*matrix=*/ 0, /*sparsemat=*/ 0, &ev,  \
+        igraph_scg_stochastic(&g, /*matrix=*/ 0, /*sparsemat=*/ 0, /*weights=*/ 0, &ev,  \
                               /* intervals= */ 2, /* intervals_vector= */ 0, \
                               /* algorithm= */ IGRAPH_SCG_EXACT,         \
                               IGRAPH_SCG_NORM_ROW, &eval, &evec,         \
                               &groups, &p, /* use_arpack= */ 0,      \
                               /* maxiter= */ 0, &scg_graph, &scg_matrix,     \
-                              &scg_sparsemat, &L, &R,            \
+                              &scg_sparsemat, /* scg_weights= */ 0, &L, &R, \
                               &Lsparse, &Rsparse);               \
     } while (0)
 
