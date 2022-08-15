@@ -1507,7 +1507,7 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
     igraph_sparsemat_t myLsparse, myRsparse, tmpsparse, Rsparse_t;
     igraph_integer_t no_of_nodes;
     igraph_integer_t evmin, evmax;
-    igraph_bool_t directed;
+    igraph_bool_t directed, symmetric;
 
     /* --------------------------------------------------------------------*/
     /* Argument checks */
@@ -1526,7 +1526,8 @@ igraph_error_t igraph_scg_adjacency(const igraph_t *graph,
         directed = !igraph_matrix_is_symmetric(matrix);
     } else {
         no_of_nodes = igraph_sparsemat_nrow(sparsemat);
-        directed = !igraph_sparsemat_is_symmetric(sparsemat);
+        IGRAPH_CHECK(igraph_sparsemat_is_symmetric(sparsemat, &symmetric));
+        directed = !symmetric;
     }
 
     /* -------------------------------------------------------------------- */
