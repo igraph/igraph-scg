@@ -2,7 +2,7 @@ Spectral coarse graining methods for graphs
 ===========================================
 
 This repo contains the spectral coarse graining routines from igraph 0.9. These
-routines will be removed from igraph 0.10.0 due to their numerical instability
+routines were removed from igraph 0.10.0 due to their numerical instability
 in unit tests and due to the fact that none of the current developers are
 familiar enough with the topic to be able to sort out the unit tests. If you
 are interested in helping out, [let us
@@ -17,8 +17,7 @@ Instructions
 
 The following commnds should be enough if you have a working igraph
 installation that does _not_ contain the spectral coarse graining routines any
-more! This applies to igraph versions 0.10 and later, and the `develop` branch
-of the [igraph repo](https://github.com/igraph/igraph).
+more! This applies to igraph versions 0.10 and later.
 
 *Official igraph 0.9 releases will not work as these releases still contain the
 spectral coarse graining functions so the two libraries will conflict with each
