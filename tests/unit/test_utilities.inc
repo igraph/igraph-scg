@@ -13,19 +13,23 @@
 /* Print an igraph_real_t value. Be consistent in printing NaN/Inf across platforms. */
 void print_real(FILE *f, igraph_real_t x, const char *format) {
     igraph_bool_t g8 = !strcmp(format, "%8g");
-    if (igraph_finite(x)) {
+    if (isfinite(x)) {
+        if (x == 0 && signbit(x)) {
+            /* print negative zeros as positive zeros for sake of consistency */
+            x = +0.0;
+        }
         fprintf(f, format, x);
-    } else if (igraph_is_nan(x)) {
+    } else if (isnan(x)) {
         fprintf(f, g8 ? "     NaN" : "NaN");
-    } else if (igraph_is_posinf(x)) {
+    } else if (isinf(x) && x > 0) {
         fprintf(f, g8 ? "     Inf" : "Inf");
-    } else if (igraph_is_neginf(x)) {
+    } else if (isinf(x) && x < 0) {
         fprintf(f, g8 ? "    -Inf" : "-Inf");
     }
 }
 
 void print_vector_format(const igraph_vector_t *v, FILE *f, const char *format) {
-    long i, n = igraph_vector_size(v);
+    igraph_integer_t i, n = igraph_vector_size(v);
     fprintf(f, "(");
     for (i=0; i < n; i++) {
         fprintf(f, " ");
@@ -41,7 +45,7 @@ void print_vector(const igraph_vector_t *v) {
 
 /* Print elements of a matrix. Use brackets to make it clear when a vector has size zero. */
 void print_matrix_format(const igraph_matrix_t *m, FILE *f, const char *format) {
-    long i, j, nrow = igraph_matrix_nrow(m), ncol = igraph_matrix_ncol(m);
+    igraph_integer_t i, j, nrow = igraph_matrix_nrow(m), ncol = igraph_matrix_ncol(m);
     for (i = 0; i < nrow; i++) {
         fprintf(f, i == 0 ? "[" : " ");
         for (j = 0; j < ncol; j++) {
@@ -60,7 +64,7 @@ void print_matrix(const igraph_matrix_t *m) {
  * positive. */
 void print_matrix_first_row_positive(const igraph_matrix_t *matrix, const char* format) {
     igraph_matrix_t copy;
-    long i, j, nrow, ncol;
+    igraph_integer_t i, j, nrow, ncol;
 
     igraph_matrix_init_copy(&copy, matrix);
 
@@ -90,7 +94,7 @@ void print_matrix_first_row_positive(const igraph_matrix_t *matrix, const char* 
  * part in each column has a positive real part. */
 void print_matrix_complex_first_row_positive(const igraph_matrix_complex_t *matrix) {
     igraph_matrix_complex_t copy;
-    long i, j, nrow, ncol;
+    igraph_integer_t i, j, nrow, ncol;
     igraph_complex_t z;
     char buf[256];
     size_t len;

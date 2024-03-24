@@ -91,9 +91,9 @@ igraph_error_t igraph_i_intervals_plus_kmeans(const igraph_vector_t *v, igraph_i
 
 igraph_error_t igraph_i_intervals_method(const igraph_vector_t *v, igraph_integer_t *gr, igraph_integer_t n,
                                          igraph_integer_t n_interv) {
-    int i, lo, hi, new;
-    const int lft = 1;
-    const int include_border = 1;
+    igraph_integer_t i, lo, hi, new;
+    const igraph_integer_t lft = 1;
+    const igraph_integer_t include_border = 1;
     igraph_vector_t breaks;
 
     IGRAPH_VECTOR_INIT_FINALLY(&breaks, n_interv + 1);

@@ -41,7 +41,7 @@ igraph_error_t igraph_i_optimal_partition(const igraph_real_t *v, igraph_integer
                                           igraph_integer_t nt, igraph_integer_t matrix, const igraph_real_t *p,
                                           igraph_real_t *value) {
 
-    int i, non_ties, q, j, l, part_ind, col;
+    igraph_integer_t i, non_ties, q, j, l, part_ind, col;
     igraph_i_scg_indval_t *vs = IGRAPH_CALLOC(n, igraph_i_scg_indval_t);
     igraph_real_t *Cv, temp, sumOfSquares;
     igraph_vector_t ps;

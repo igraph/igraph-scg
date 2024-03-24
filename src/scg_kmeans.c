@@ -24,7 +24,7 @@
  *  DESCRIPTION
  *  -----------
  *    The kmeans_Lloyd function is adapted from the R-stats package.
- *    It perfoms Lloyd's k-means clustering on a p x n data matrix
+ *    It performs Lloyd's k-means clustering on a p x n data matrix
  *    stored row-wise in a vector 'x'. 'cen' contains k initial centers.
  *    The group label to which each object belongs is stored in 'cl'.
  *    Labels are positive consecutive integers starting from 0.
@@ -36,9 +36,9 @@
 igraph_error_t igraph_i_kmeans_Lloyd(const igraph_vector_t *x, igraph_integer_t n, igraph_integer_t p,
                                      igraph_vector_t *centers, igraph_integer_t k, igraph_integer_t *cl, igraph_integer_t maxiter) {
 
-    int iter, i, j, c, it, inew = 0;
+    igraph_integer_t iter, i, j, c, it, inew = 0;
     igraph_real_t best, dd, tmp;
-    int updated;
+    igraph_bool_t updated;
     igraph_vector_int_t nc;
 
     IGRAPH_CHECK(igraph_vector_int_init(&nc, k));
@@ -48,7 +48,7 @@ igraph_error_t igraph_i_kmeans_Lloyd(const igraph_vector_t *x, igraph_integer_t 
         cl[i] = -1;
     }
     for (iter = 0; iter < maxiter; iter++) {
-        updated = 0;
+        updated = false;
         for (i = 0; i < n; i++) {
             /* find nearest centre for each point */
             best = IGRAPH_INFINITY;
@@ -64,7 +64,7 @@ igraph_error_t igraph_i_kmeans_Lloyd(const igraph_vector_t *x, igraph_integer_t 
                 }
             }
             if (cl[i] != inew) {
-                updated = 1;
+                updated = true;
                 cl[i] = inew;
             }
         }
@@ -93,7 +93,7 @@ igraph_error_t igraph_i_kmeans_Lloyd(const igraph_vector_t *x, igraph_integer_t 
     igraph_vector_int_destroy(&nc);
     IGRAPH_FINALLY_CLEAN(1);
 
-    /* convervenge check */
+    /* convergence check */
     if (iter >= maxiter - 1) {
         IGRAPH_ERROR("Lloyd k-means did not converge", IGRAPH_FAILURE);
     }

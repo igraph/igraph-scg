@@ -31,8 +31,8 @@
 
 /*to be used with qsort and struct ind_val arrays */
 int igraph_i_compare_ind_val(const void *a, const void *b) {
-    igraph_i_scg_indval_t *arg1 = (igraph_i_scg_indval_t *) a;
-    igraph_i_scg_indval_t *arg2 = (igraph_i_scg_indval_t *) b;
+    const igraph_i_scg_indval_t *arg1 = (const igraph_i_scg_indval_t *) a;
+    const igraph_i_scg_indval_t *arg2 = (const igraph_i_scg_indval_t *) b;
 
     if ( arg1->val < arg2->val ) {
         return -1;
@@ -45,8 +45,8 @@ int igraph_i_compare_ind_val(const void *a, const void *b) {
 
 /*to be used with qsort and struct groups*/
 int igraph_i_compare_groups(const void *a, const void *b) {
-    igraph_i_scg_groups_t *arg1 = (igraph_i_scg_groups_t *) a;
-    igraph_i_scg_groups_t *arg2 = (igraph_i_scg_groups_t *) b;
+    const igraph_i_scg_groups_t *arg1 = (const igraph_i_scg_groups_t *) a;
+    const igraph_i_scg_groups_t *arg2 = (const igraph_i_scg_groups_t *) b;
     igraph_integer_t i;
     for (i = 0; i < arg1->n; i++) {
         if (arg1->gr[i] > arg2->gr[i]) {
@@ -58,7 +58,7 @@ int igraph_i_compare_groups(const void *a, const void *b) {
     return 0;
 }
 
-/* allocate a igraph_real_t symmetrix matrix with dimension size x size
+/* allocate a igraph_real_t symmetric matrix with dimension size x size
    in vector format*/
 igraph_real_t *igraph_i_real_sym_matrix(igraph_integer_t size)  {
     igraph_real_t *S = IGRAPH_CALLOC(size * (size + 1) / 2, igraph_real_t);
