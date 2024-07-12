@@ -1333,7 +1333,7 @@ static igraph_error_t igraph_i_scg_common_checks(const igraph_t *graph,
 
     if ((matrix && igraph_matrix_ncol(matrix) != no_of_nodes) ||
         (sparsemat && igraph_sparsemat_ncol(sparsemat) != no_of_nodes)) {
-        IGRAPH_ERROR("Matrix must be square", IGRAPH_NONSQUARE);
+        IGRAPH_ERROR("Matrix must be square", IGRAPH_EINVAL);
     }
 
     igraph_vector_int_minmax(ev, evmin, evmax);
