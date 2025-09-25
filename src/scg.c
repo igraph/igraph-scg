@@ -407,8 +407,7 @@ igraph_error_t igraph_scg_grouping(const igraph_matrix_t *V,
         break;
     case IGRAPH_SCG_INTERV_KM:
         for (i = 0; i < nev; i++) {
-            igraph_vector_t tmpv;
-            igraph_vector_view(&tmpv, &MATRIX(*V, 0, i), no_of_nodes);
+            const igraph_vector_t tmpv = igraph_vector_view(&MATRIX(*V, 0, i), no_of_nodes);
             IGRAPH_CHECK(igraph_i_intervals_plus_kmeans(&tmpv,
                          &MATRIX(gr_mat, 0, i),
                          no_of_nodes, INVEC(i),
@@ -417,8 +416,7 @@ igraph_error_t igraph_scg_grouping(const igraph_matrix_t *V,
         break;
     case IGRAPH_SCG_INTERV:
         for (i = 0; i < nev; i++) {
-            igraph_vector_t tmpv;
-            igraph_vector_view(&tmpv, &MATRIX(*V, 0, i), no_of_nodes);
+            const igraph_vector_t tmpv = igraph_vector_view(&MATRIX(*V, 0, i), no_of_nodes);
             IGRAPH_CHECK(igraph_i_intervals_method(&tmpv,
                                                    &MATRIX(gr_mat, 0, i),
                                                    no_of_nodes, INVEC(i)));
@@ -952,7 +950,7 @@ igraph_error_t igraph_scg_norm_eps(const igraph_matrix_t *V,
     IGRAPH_CHECK(igraph_vector_resize(eps, no_of_vectors));
 
     for (k = 0; k < no_of_vectors; k++) {
-        igraph_vector_view(&x, &MATRIX(*V, 0, k), no_of_nodes);
+        x = igraph_vector_view(&MATRIX(*V, 0, k), no_of_nodes);
         igraph_vector_null(&res);
         IGRAPH_CHECK(igraph_sparsemat_gaxpy(&proj, &x, &res));
         VECTOR(*eps)[k] = 0.0;

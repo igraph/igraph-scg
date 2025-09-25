@@ -1,6 +1,6 @@
-# Minimum CMake that we require is 3.16 because igraph itself requires 3.16
+# Minimum CMake that we require is 3.18 because igraph itself requires 3.18
 # as well
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 # Add etc/cmake to CMake's search path so we can put our private stuff there
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/etc/cmake)
@@ -44,7 +44,7 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Handle dependencies
-find_package(igraph)
+find_package(igraph 1 REQUIRED)
 
 # Enable unit tests. Behave nicely and do this only if we are not being
 # included as a sub-project in another CMake project

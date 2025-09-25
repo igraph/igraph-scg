@@ -1,4 +1,4 @@
-set(PACKAGE_VERSION 0.1.0)
+set(PACKAGE_VERSION 0.2.0)
 
 #
 # Do not change anything below this line unless you know what you are doing
